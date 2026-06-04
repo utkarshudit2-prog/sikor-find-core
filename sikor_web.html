@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIKOR PRO SEARCH SUITE v19.0</title>
+    <style>
+        :root {
+            --google-dark: #07080a; /* True deep premium onyx black */
+            --google-input-bg: #111317;
+            --accent-color: #ffffff;
+            --steel-light: #8e95a2;
+            --text-main: #f3f4f6;
+            --text-muted: #3d414a;
+            --neon-border: #1b1d24;
+            --matrix-glow: #00ffcc;
+        }
+
+        body {
+            background-color: var(--google-dark);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .top-nav {
+            width: 100%;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 20px;
+            box-sizing: border-box;
+            font-size: 12px;
+            border-bottom: 1px solid var(--neon-border);
+            background-color: #090a0d;
+        }
+
+        .top-nav a {
+            color: var(--steel-light);
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .top-nav a:hover, .top-nav a.active {
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 4px;
+        }
+
+        .search-main-container {
+            width: 100%;
+            max-width: 650px;
+            padding: 20px;
+            box-sizing: border-box;
+            margin-top: 15vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .sikor-logo {
+            font-size: 60px;
+            font-weight: 900;
+            letter-spacing: -2px;
+            margin-bottom: 40px;
+            text-align: center;
+            text-transform: uppercase;
+            color: var(--accent-color);
+            font-family: 'Arial Black', sans-serif;
+        }
+
+        .sikor-logo span {
+            color: var(--steel-light);
+            font-weight: 200;
+        }
+
+        .search-box-wrapper {
+            width: 100%;
+            background-color: var(--google-input-bg);
+            border: 1px solid var(--neon-border);
+            border-radius: 2px;
+            display: flex;
+            padding: 2px 16px;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .search-box-wrapper:focus-within {
+            box-shadow: 0 0 30px rgba(255,255,255,0.03);
+            border-color: var(--accent-color);
+        }
+
+        .search-icon-lens {
+            color: var(--text-muted);
+            margin-right: 14px;
+            font-size: 16px;
+        }
+
+        .search-input-field {
+            flex: 1;
+            height: 48px;
+            background-color: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 16px;
+            outline: none;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-group {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .google-btn {
+            background-color: #111317;
+            border: 1px solid var(--neon-border);
+            color: var(--steel-light);
+            padding: 12px 24px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 2px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: all 0.2s ease;
+        }
+
+        .google-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            background-color: #191c24;
+        }
+
+        .results-render-plane {
+            width: 100%;
+            margin-top: 30px;
+            display: none;
+        }
+
+        .result-card-node {
+            background-color: #0b0c0f;
+            border: 1px solid var(--neon-border);
+            border-radius: 2px;
+            padding: 22px;
+            margin-bottom: 14px;
+            text-align: left;
+            position: relative;
+        }
+
+        /* VECTOR TRACKING GLOW TAG SYSTEM */
+        .vector-score-badge {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-family: monospace;
+            font-size: 11px;
+            font-weight: 700;
+            background-color: #14161d;
+            border: 1px solid #232733;
+            color: var(--matrix-glow);
+            padding: 2px 8px;
+            border-radius: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        .result-title-link {
+            color: var(--accent-color);
+            font-size: 19px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 8px;
+            max-width: 80%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .result-title-link:hover {
+            text-decoration: underline;
+            color: var(--steel-light);
+        }
+
+        .result-snippet {
+            font-size: 13.5px;
+            color: #9ba1ad;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .image-results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-top: 20px;
+        }
+
+        .image-card {
+            background-color: #0b0c0f;
+            border: 1px solid var(--neon-border);
+            border-radius: 2px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            filter: grayscale(100%);
+            background-color: #040506;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .image-card:hover img {
+            filter: grayscale(0%);
+            transform: scale(1.02);
+        }
+
+        .image-title {
+            padding: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--steel-light);
+            text-decoration: none;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+        }
+
+        .user-profile-badge {
+            width: 100%;
+            background-color: #0b0c0f;
+            border: 1px solid var(--neon-border);
+            border-radius: 2px;
+            padding: 18px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-align: left;
+            box-sizing: border-box;
+        }
+
+        .profile-avatar-node {
+            width: 52px;
+            height: 52px;
+            background-color: #ffffff;
+            color: #07080a;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .profile-info-block {
+            flex: 1;
+        }
+
+        .profile-name-text {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--accent-color);
+            letter-spacing: 0.5px;
+        }
+
+        .profile-email-text {
+            font-size: 12px;
+            color: var(--steel-light);
+            margin-top: 3px;
+        }
+
+        .clearance-tag {
+            font-size: 10px;
+            background-color: #14161d;
+            color: #ffffff;
+            padding: 3px 8px;
+            border-radius: 2px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border: 1px solid #232733;
+        }
+
+        .smail-card {
+            background: linear-gradient(135deg, #0b0c0f, #040506);
+            border-left: 4px solid var(--accent-color);
+            border-top: 1px solid var(--neon-border);
+            border-right: 1px solid var(--neon-border);
+            border-bottom: 1px solid var(--neon-border);
+            padding: 18px;
+            margin-bottom: 12px;
+            text-align: left;
+        }
+
+        .status-tag {
+            color: var(--steel-light);
+            font-family: monospace;
+            font-size: 11px;
+            margin-right: auto;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-nav">
+        <span class="status-tag" id="serverStatus">📡 INITIATING NEXUS PROTOCOL PRO...</span>
+        <a id="navWeb" class="active" onclick="switchTab('web')">SIKOR CORE PRO</a>
+        <a id="navMail" onclick="switchTab('mail')">SMAIL</a>
+        <a id="navImages" onclick="switchTab('images')">GRAPHICS MATRIX</a>
+    </div>
+
+    <div class="search-main-container" id="mainCenterBlock">
+        
+        <div class="sikor-logo" id="engineLogo">
+            SIKOR<span>-FIND</span>
+        </div>
+
+        <div class="search-box-wrapper">
+            <span class="search-icon-lens">🔍</span>
+            <input type="text" class="search-input-field" id="queryInput" placeholder="Execute pro matrix sequence search queries...">
+        </div>
+
+        <div class="btn-group" id="btnGroupBlock">
+            <button class="google-btn" onclick="executeSuiteSearch()">Execute Query</button>
+            <button class="google-btn" onclick="alert('Cluster State: PRO OPERATIONAL')">System Verify</button>
+        </div>
+
+        <div class="results-render-plane" id="resultsPlane">
+            <!-- Output Injection -->
+        </div>
+    </div>
+
+<script>
+    const SERVER_URL = "http://127.0.0.1:5000";
+    let activeMode = "web";
+
+    async function checkServerConnection() {
+        const statusText = document.getElementById("serverStatus");
+        try {
+            const res = await fetch(SERVER_URL + "/");
+            if(res.ok) {
+                statusText.innerText = "● SIKOR PRO KERNEL: SECURE SHAKING [PORT 5000]";
+                statusText.style.color = "#ffffff";
+            }
+        } catch (e) {
+            statusText.innerText = "○ PIPELINE LOST: VERIFY BACKGROUND TERMINAL RUNTIME";
+            statusText.style.color = "#4e535c";
+        }
+    }
+
+    function switchTab(mode) {
+        activeMode = mode;
+        document.querySelectorAll('.top-nav a').forEach(el => el.classList.remove('active'));
+        
+        if(mode === 'web') {
+            document.getElementById('navWeb').classList.add('active');
+            document.getElementById('queryInput').placeholder = "Execute pro matrix sequence search queries...";
+        }
+        if(mode === 'mail') {
+            document.getElementById('navMail').classList.add('active');
+            document.getElementById('queryInput').placeholder = "🔍 Isolate specific files rows from secure mailbox inbox...";
+        }
+        if(mode === 'images') {
+            document.getElementById('navImages').classList.add('active');
+            document.getElementById('queryInput').placeholder = "Query raw graphic assets vectors matrices clusters...";
+        }
+        
+        executeSuiteSearch();
+    }
+
+    async function executeSuiteSearch() {
+        const query = document.getElementById("queryInput").value.trim().toLowerCase();
+        const plane = document.getElementById("resultsPlane");
+        const logo = document.getElementById("engineLogo");
+        const btnBlock = document.getElementById("btnGroupBlock");
+        const centerBlock = document.getElementById("mainCenterBlock");
+
+        if(logo) { logo.style.fontSize = "36px"; logo.style.marginBottom = "25px"; }
+        if(btnBlock) btnBlock.style.display = "none";
+        if(centerBlock) { centerBlock.style.justifyContent = "flex-start"; centerBlock.style.marginTop = "4vh"; }
+        plane.style.display = "block";
+
+        if(activeMode === "mail") {
+            let profileHtml = `
+                <div class="user-profile-badge">
+                    <div class="profile-avatar-node">U</div>
+                    <div class="profile-info-block">
+                        <div class="profile-name-text">UTKARSH</div>
+                        <div class="profile-email-text">utkarsh@sikor.os</div>
+                    </div>
+                    <div class="clearance-tag">CORE ROOT</div>
+                </div>
+                <h3 style="color:var(--accent-color); margin-top:0; text-align:left; font-size:15px; letter-spacing:1px;">📬 CENTRAL PRIVACY ENCRYPTED SMAIL INBOX</h3>
+            `;
+
+            const mails = [
+                { sender: "📥 GitHub Deployment Service", color: "#ffffff", text: "Utkarsh bhai, aapka repository token configuration upload ready hai. SIKOR-FIND server host karne ke liye pipeline check kijiye." },
+                { sender: "📥 SIKOR Hardware Lab", color: "#8e95a2", text: "MPU6050 Gyroscope calibration matrix ready. Step 2 communication link test ka waiting ho raha hai." }
+            ];
+
+            const filteredMails = mails.filter(m => m.sender.toLowerCase().includes(query) || m.text.toLowerCase().includes(query));
+            plane.innerHTML = profileHtml;
+            
+            if(filteredMails.length > 0) {
+                filteredMails.forEach(m => {
+                    plane.innerHTML += `
+                        <div class="smail-card" style="border-left-color: ${m.color};">
+                            <div style="font-weight:700; color:${m.color}; font-size:13px; letter-spacing:0.5px;">${m.sender}</div>
+                            <div style="font-size:13px; margin-top:6px; color:#bdc1c6;">${m.text}</div>
+                        </div>
+                    `;
+                });
+            } else {
+                plane.innerHTML += `<p style="color:var(--text-muted); text-align:center; margin-top:20px; font-size:13px;">📭 Null array: No documents found matching tracking parameter '${query}'</p>`;
+            }
+            return;
+        }
+
+        if(query === "") {
+            plane.innerHTML = `<p style="color:var(--text-muted); text-align:center; font-size:13px;">⌨| Awaiting deep matrix token array parameters sequence input...</p>`;
+            return;
+        }
+
+        plane.innerHTML = `<p style="color:var(--text-muted); font-size:13px; font-family:monospace; text-align:center;">📡 Triggering vector evaluation filters & mapping real internet nodes...</p>`;
+
+        try {
+            const response = await fetch(`${SERVER_URL}/search_api?q=${encodeURIComponent(query)}&mode=${activeMode}`);
+            const data = await response.json();
+            plane.innerHTML = "";
+
+            if(activeMode === "web") {
+                if(data.results && data.results.length > 0) {
+                    data.results.forEach(item => {
+                        plane.innerHTML += `
+                            <div class="result-card-node">
+                                <span class="vector-score-badge">PRO MATCH: ${item.vector_score}%</span>
+                                <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="result-title-link">${item.title}</a>
+                                <p class="result-snippet">${item.snippet}</p>
+                            </div>
+                        `;
+                    });
+                } else {
+                    plane.innerHTML = `<p style="color:var(--text-muted); text-align:center; font-size:13px;">❌ Distributed scraper failure: No matching strings registered.</p>`;
+                }
+            } 
+            else if (activeMode === "images") {
+                if(data.images && data.images.length > 0) {
+                    let gridHtml = `<div class="image-results-grid">`;
+                    data.images.forEach(img => {
+                        gridHtml += `
+                            <div class="image-card">
+                                <img src="${img.url}" alt="image" onerror="this.src='https://via.placeholder.com/150/111317/ffffff?text=Asset+Offline'">
+                                <a href="${img.context}" target="_blank" class="image-title">${img.title}</a>
+                            </div>
+                        `;
+                    });
+                    gridHtml += `</div>`;
+                    plane.innerHTML = `<h3 style="text-align:left; font-size:15px; letter-spacing:0.5px;">🖼️ HIGH-RELEVANCE VECTOR GRAPHICS MATRIX: '${query.toUpperCase()}'</h3>` + gridHtml;
+                } else {
+                    plane.innerHTML = `<p style="color:var(--text-muted); text-align:center; font-size:13px;">Null packet: Image database matching frames empty.</p>`;
+                }
+            }
+
+        } catch (error) {
+            plane.innerHTML = `<div style="border:1px solid #ff3366; padding:15px; border-radius:2px; color:#ff3366; font-weight:bold; font-size:13px; text-align:center; background-color: rgba(255,51,92,0.01);">🚨 PRO HANDSHAKE EXCEPTION: Local system route down. Run Pydroid core backend terminal!</div>`;
+        }
+    }
+
+    document.getElementById("queryInput").addEventListener("keydown", function(e) {
+        if (e.key === "Enter") executeSuiteSearch();
+    });
+
+    checkServerConnection();
+</script>
+
+</body>
+</html>
